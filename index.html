@@ -7657,9 +7657,11 @@ var CSS=''
  +'.ecg-ring{position:fixed;z-index:2147483000;pointer-events:none;border:3px solid #fff;border-radius:12px;'
  +'box-shadow:0 0 0 4px #FFB600,0 0 0 9999px rgba(5,14,31,.22);animation:ecg-pulse 1.4s ease-in-out infinite}'
  +'@keyframes ecg-pulse{0%,100%{box-shadow:0 0 0 4px #FFB600,0 0 0 9999px rgba(5,14,31,.22)}50%{box-shadow:0 0 0 9px #FFB600,0 0 0 9999px rgba(5,14,31,.22)}}'
- +'.ecg-tap{position:absolute;top:-52px;right:-6px;width:44px;height:44px;border-radius:50%;background:#FFB600;color:#050E1F;border:3px solid #fff;'
+ +'.ecg-tap{position:absolute;bottom:-52px;right:-6px;width:44px;height:44px;border-radius:50%;background:#FFB600;color:#050E1F;border:3px solid #fff;'
  +'box-shadow:0 6px 16px rgba(5,14,31,.35);display:flex;align-items:center;justify-content:center;animation:ecg-bob 1s ease-in-out infinite}'
- +'.ecg-tap.ecg-tap-left{right:auto;left:-6px}.ecg-tap.ecg-tap-below{top:auto;bottom:-52px}'
+ +'.ecg-tap.ecg-tap-left{right:auto;left:-6px}'
+ +'.ecg-tap.ecg-tap-above{bottom:auto;top:-52px;animation-name:ecg-bob-down}.ecg-tap.ecg-tap-above svg{transform:rotate(180deg)}'
+ +'@keyframes ecg-bob-down{0%,100%{transform:translateY(0)}50%{transform:translateY(7px)}}'
  +'.ecg-tap svg{width:26px;height:26px;display:block}'
  +'@keyframes ecg-bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}'
  +'.ecg-card{position:fixed;z-index:2147483001;pointer-events:none;background:#0C76D8;color:#fff;border-radius:10px;padding:8px 12px 7px;font:13px/1.35 Inter,system-ui,sans-serif;box-shadow:0 10px 28px rgba(5,14,31,.28)}'
@@ -7823,7 +7825,7 @@ function place(){
   var box=on?[Math.round(b.left),Math.round(b.top),Math.round(b.width),Math.round(b.height),W,H].join(','):'off,'+W+','+H;
   if(box===lastBox) return; lastBox=box;                        /* nothing moved: nothing to repaint */
   if(on){ var pad=6; r.style.display='block'; r.style.left=(b.left-pad)+'px'; r.style.top=(b.top-pad)+'px'; r.style.width=(b.width+2*pad)+'px'; r.style.height=(b.height+2*pad)+'px';
-    var tap=$('.ecg-tap',r); if(tap){ tap.classList.toggle('ecg-tap-left',b.right+12>W); tap.classList.toggle('ecg-tap-below',b.top-pad<60); } }
+    var tap=$('.ecg-tap',r); if(tap){ tap.classList.toggle('ecg-tap-left',b.right+12>W); tap.classList.toggle('ecg-tap-above',b.bottom+pad+60>H); } }
   else r.style.display='none';
   if(!c) return;
   if(mobile()){                                                 /* phones: one fixed slot, the ring does the pointing */
