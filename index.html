@@ -7652,8 +7652,16 @@ var SITE='chevron', BRAND='DELI (V4)';
 var CSS=''
  /* the optimizer toast covered Publish (top:52px/right:16px); park it bottom-right on laptops */
  +'.mo-toast{top:auto!important;bottom:24px!important;right:16px!important}'
- +'.ecg-ring{position:fixed;z-index:2147483000;pointer-events:none;border:3px solid #0C76D8;border-radius:10px;box-shadow:0 0 0 4px rgba(12,118,216,.18);animation:ecg-pulse 1.6s ease-in-out infinite}'
- +'@keyframes ecg-pulse{0%,100%{box-shadow:0 0 0 4px rgba(12,118,216,.18)}50%{box-shadow:0 0 0 12px rgba(12,118,216,0)}}'
+ /* beacon: white inner edge + gold ring (reads on blue buttons and white cards alike), a slow pulse, a soft
+    spotlight dim on everything else (the giant box-shadow), and a bobbing "tap" hand on the corner. All pass-through. */
+ +'.ecg-ring{position:fixed;z-index:2147483000;pointer-events:none;border:3px solid #fff;border-radius:12px;'
+ +'box-shadow:0 0 0 4px #FFB600,0 0 0 9999px rgba(5,14,31,.22);animation:ecg-pulse 1.4s ease-in-out infinite}'
+ +'@keyframes ecg-pulse{0%,100%{box-shadow:0 0 0 4px #FFB600,0 0 0 9999px rgba(5,14,31,.22)}50%{box-shadow:0 0 0 9px #FFB600,0 0 0 9999px rgba(5,14,31,.22)}}'
+ +'.ecg-tap{position:absolute;top:-52px;right:-6px;width:44px;height:44px;border-radius:50%;background:#FFB600;color:#050E1F;border:3px solid #fff;'
+ +'box-shadow:0 6px 16px rgba(5,14,31,.35);display:flex;align-items:center;justify-content:center;animation:ecg-bob 1s ease-in-out infinite}'
+ +'.ecg-tap.ecg-tap-left{right:auto;left:-6px}.ecg-tap.ecg-tap-below{top:auto;bottom:-52px}'
+ +'.ecg-tap svg{width:26px;height:26px;display:block}'
+ +'@keyframes ecg-bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}'
  +'.ecg-card{position:fixed;z-index:2147483001;pointer-events:none;background:#0C76D8;color:#fff;border-radius:10px;padding:8px 12px 7px;font:13px/1.35 Inter,system-ui,sans-serif;box-shadow:0 10px 28px rgba(5,14,31,.28)}'
  +'.ecg-card .ecg-row{display:flex;align-items:center;gap:10px;min-height:22px}'
  +'.ecg-card .ecg-step{flex:none;font-size:11px;font-weight:700;letter-spacing:.3px;background:rgba(255,255,255,.18);border-radius:6px;padding:2px 6px}'
@@ -7785,7 +7793,7 @@ function step(){
 }
 
 /* ---- render ---- */
-function ring(){ var r=$('#ecg-ring'); if(!r){ r=document.createElement('div'); r.id='ecg-ring'; r.className='ecg-ring'; document.body.appendChild(r); } return r; }
+function ring(){ var r=$('#ecg-ring'); if(!r){ r=document.createElement('div'); r.id='ecg-ring'; r.className='ecg-ring'; r.innerHTML='<span class="ecg-tap" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11V4.5a1.5 1.5 0 0 1 3 0V11"/><path d="M12 10.5V9a1.5 1.5 0 0 1 3 0v2.5"/><path d="M15 11v-.5a1.5 1.5 0 0 1 3 0V12"/><path d="M18 12v-.2a1.5 1.5 0 0 1 3 0V16a6 6 0 0 1-6 6h-2.5a6 6 0 0 1-4.9-2.5L4.3 15.2a1.6 1.6 0 0 1 2.5-2L9 15.5"/></svg></span>'; document.body.appendChild(r); } return r; }
 function card(){ var c=$('#ecg-card'); if(!c){ c=document.createElement('div'); c.id='ecg-card'; c.className='ecg-card'; document.body.appendChild(c); } return c; }
 function hide(){ var r=$('#ecg-ring'); if(r) r.remove(); var c=$('#ecg-card'); if(c) c.remove(); lastKey=''; cur=null; lastBox=''; }
 function esc(s){ return String(s).replace(/[&<>"]/g,function(ch){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch]; }); }
@@ -7814,7 +7822,8 @@ function place(){
   var on=!!(el&&el.isConnected&&shown(el)), b=on?el.getBoundingClientRect():null;
   var box=on?[Math.round(b.left),Math.round(b.top),Math.round(b.width),Math.round(b.height),W,H].join(','):'off,'+W+','+H;
   if(box===lastBox) return; lastBox=box;                        /* nothing moved: nothing to repaint */
-  if(on){ var pad=6; r.style.display='block'; r.style.left=(b.left-pad)+'px'; r.style.top=(b.top-pad)+'px'; r.style.width=(b.width+2*pad)+'px'; r.style.height=(b.height+2*pad)+'px'; }
+  if(on){ var pad=6; r.style.display='block'; r.style.left=(b.left-pad)+'px'; r.style.top=(b.top-pad)+'px'; r.style.width=(b.width+2*pad)+'px'; r.style.height=(b.height+2*pad)+'px';
+    var tap=$('.ecg-tap',r); if(tap){ tap.classList.toggle('ecg-tap-left',b.right+12>W); tap.classList.toggle('ecg-tap-below',b.top-pad<60); } }
   else r.style.display='none';
   if(!c) return;
   if(mobile()){                                                 /* phones: one fixed slot, the ring does the pointing */
