@@ -7652,23 +7652,26 @@ var SITE='chevron', BRAND='DELI (V4)', SWAP_IN='tuna salad sub';
 var CSS=''
  /* the optimizer toast covered Publish (top:52px/right:16px); park it bottom-right on laptops */
  +'.mo-toast{top:auto!important;bottom:24px!important;right:16px!important}'
- +'.ecg-ring{position:fixed;z-index:99990;pointer-events:none;border:3px solid #0C76D8;border-radius:10px;box-shadow:0 0 0 4px rgba(12,118,216,.18);animation:ecg-pulse 1.6s ease-in-out infinite;transition:left .18s,top .18s,width .18s,height .18s}'
+ +'.ecg-ring{position:fixed;z-index:99990;pointer-events:none;border:3px solid #0C76D8;border-radius:10px;box-shadow:0 0 0 4px rgba(12,118,216,.18);animation:ecg-pulse 1.6s ease-in-out infinite}'
  +'@keyframes ecg-pulse{0%,100%{box-shadow:0 0 0 4px rgba(12,118,216,.18)}50%{box-shadow:0 0 0 12px rgba(12,118,216,0)}}'
- +'.ecg-card{position:fixed;z-index:99991;pointer-events:none;max-width:320px;background:#0C76D8;color:#fff;border-radius:12px;padding:12px 14px 12px;font:13px/1.45 Inter,system-ui,sans-serif;box-shadow:0 12px 32px rgba(5,14,31,.28);transition:left .18s,top .18s}'
- +'.ecg-card .ecg-step{font-size:11px;font-weight:600;letter-spacing:.4px;text-transform:uppercase;opacity:.85;display:flex;justify-content:space-between;align-items:center;gap:12px}'
+ +'.ecg-card{position:fixed;z-index:99991;pointer-events:none;background:#0C76D8;color:#fff;border-radius:10px;padding:8px 12px 7px;font:13px/1.35 Inter,system-ui,sans-serif;box-shadow:0 10px 28px rgba(5,14,31,.28)}'
+ +'.ecg-card .ecg-row{display:flex;align-items:center;gap:10px;min-height:22px}'
+ +'.ecg-card .ecg-step{flex:none;font-size:11px;font-weight:700;letter-spacing:.3px;background:rgba(255,255,255,.18);border-radius:6px;padding:2px 6px}'
+ +'.ecg-card .ecg-title{flex:1;font-size:14px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}'
  +'.ecg-card .ecg-skip,.ecg-card .ecg-btn{pointer-events:auto}'
- +'.ecg-card .ecg-skip{background:none;border:0;color:#fff;opacity:.85;font:600 11px Inter,system-ui,sans-serif;cursor:pointer;padding:2px 0;text-decoration:underline}'
- +'.ecg-card .ecg-title{font-size:15px;font-weight:700;margin:4px 0 2px}'
- +'.ecg-card .ecg-body{opacity:.95}'
- +'.ecg-card .ecg-bar{height:3px;background:rgba(255,255,255,.3);border-radius:2px;margin-top:10px;overflow:hidden}'
- +'.ecg-card .ecg-bar i{display:block;height:100%;background:#13D6E5;border-radius:2px;transition:width .3s}'
+ +'.ecg-card .ecg-skip{flex:none;background:none;border:0;color:#fff;opacity:.8;font:600 12px Inter,system-ui,sans-serif;cursor:pointer;padding:4px 0 4px 6px;text-decoration:underline}'
+ +'.ecg-card .ecg-body{margin-top:6px;opacity:.95;white-space:normal}'
+ +'.ecg-card .ecg-bar{height:3px;background:rgba(255,255,255,.3);border-radius:2px;margin-top:7px;overflow:hidden}'
+ +'.ecg-card .ecg-bar i{display:block;height:100%;background:#13D6E5;border-radius:2px}'
  +'.ecg-card .ecg-arrow{position:absolute;width:12px;height:12px;background:#0C76D8;transform:rotate(45deg)}'
- +'.ecg-card.ecg-done{background:#009952}.ecg-card.ecg-done .ecg-arrow{background:#009952}.ecg-card.ecg-done .ecg-bar i{background:#DEF9EF}'
- +'.ecg-card .ecg-btn{margin-top:10px;background:#fff;color:#0C76D8;border:0;border-radius:8px;padding:8px 12px;font:600 13px Inter,system-ui,sans-serif;cursor:pointer}'
+ +'.ecg-card.ecg-done{background:#009952;padding-bottom:10px}.ecg-card.ecg-done .ecg-title{white-space:normal}.ecg-card.ecg-done .ecg-arrow{background:#009952}.ecg-card.ecg-done .ecg-bar i{background:#DEF9EF}'
+ +'.ecg-card .ecg-btn{margin-top:8px;background:#fff;color:#0C76D8;border:0;border-radius:8px;padding:7px 12px;font:600 13px Inter,system-ui,sans-serif;cursor:pointer}'
  +'.ecg-card.ecg-done .ecg-btn{color:#009952}'
+ /* phones: the card lives in one fixed slot above the toasts; only the ring moves */
+ +'.ecg-card.ecg-dock{left:12px!important;right:12px!important;top:auto!important;bottom:124px!important;width:auto!important;border-radius:12px}'
  +'.ecg-pill{position:fixed;left:50%;bottom:14px;transform:translateX(-50%);z-index:99991;background:#050E1F;color:#fff;border:0;border-radius:999px;padding:8px 14px;font:600 12px Inter,system-ui,sans-serif;cursor:pointer;box-shadow:0 6px 18px rgba(0,0,0,.25)}'
- +'@media (max-width:900px),(max-height:520px){.ecg-card{max-width:calc(100vw - 24px)}.ecg-pill{bottom:76px}}';
-var TOTAL=9, autoCloseT=0, skipped=false, landed=false, landT=0, fcPreset=false, lastKey='', lastEl=null;
+ +'@media (max-width:900px),(max-height:520px){.ecg-pill{bottom:76px}}';
+var TOTAL=9, autoCloseT=0, skipped=false, landed=false, landT=0, fcPreset=false, lastKey='';
 function $(s,r){ return (r||document).querySelector(s); }
 function $$(s,r){ return Array.prototype.slice.call((r||document).querySelectorAll(s)); }
 function active(){ return $('.screen.active'); }
@@ -7705,7 +7708,7 @@ function presetForecast(){
 
 /* ---- the state machine: returns {n, key, el, title, body} or null ---- */
 function sidebarStep(n,label,title,body){
-  if(mobile()&&!drawerOpen()){ var h=$('.rs-burger',active()); if(h) return {n:n,key:'burger-'+label,el:h,title:'Open the menu',body:'Tap the menu button, then choose '+label+'.'}; }
+  if(mobile()&&!drawerOpen()){ var h=$('.rs-burger',active()); if(h) return {n:n,key:'burger-'+label,el:h,title:'Open the menu \u2192 '+label,body:'Tap the menu button, then choose '+label+'.'}; }
   var it=sbItem(label); return it?{n:n,key:'sb-'+label,el:it,title:title,body:body}:null;
 }
 function step(){
@@ -7715,36 +7718,36 @@ function step(){
   if(confirmed) return {n:TOTAL,key:'done',el:null,done:true,title:"That's the loop",body:'Menu Optimizer swap → Forecasting production sheet → Webtrition MyOrders suggested order, confirmed with approved suppliers. Reload the page to run it again.'};
   if(dockOn){
     var go=$('#wt-go'); if(go&&shown(go)) return {n:8,key:'wt-go',el:go,title:'Open the suggested list',body:'MyOrders built the list from the forecast and the recipe.'};
-    if(confirm&&shown(confirm)) return {n:9,key:'wt-confirm',el:confirm,title:'Confirm the order',body:'Every line is matched to an approved supplier. Confirm to place it.'};
+    if(confirm&&shown(confirm)) return {n:9,key:'wt-confirm',el:confirm,title:'Confirm order',body:'Every line is matched to an approved supplier. Confirm to place it.'};
     return null;
   }
   if(id==='screen-forecasting'){
-    if(!window.fcGenerated){ var g=$('#fc-gen'); return g?{n:6,key:'fc-gen',el:g,title:'Generate the production sheet',body:'Eurest Cafe and Tomorrow are already selected — tap Generate.'}:null; }
+    if(!window.fcGenerated){ var g=$('#fc-gen'); return g?{n:6,key:'fc-gen',el:g,title:'Generate (site + Tomorrow preset)',body:'Eurest Cafe and Tomorrow are already selected — tap Generate.'}:null; }
     var btn=$('#wt-order-btn');
-    if(btn&&shown(btn)) return {n:7,key:'wt-btn',el:btn,title:'Build the order in MyOrders',body:'The swap-in is on the sheet as NEW · FROM SWAP. Send its needs to Webtrition.'};
+    if(btn&&shown(btn)) return {n:7,key:'wt-btn',el:btn,title:'Build suggested order in MyOrders',body:'The swap-in is on the sheet as NEW · FROM SWAP. Send its needs to Webtrition.'};
     if(!e) return null;
-    return sidebarStep(7,'Webtrition','Open Webtrition','MyOrders builds a suggested order from this production sheet.');
+    return sidebarStep(7,'Webtrition','Tap Webtrition','MyOrders builds a suggested order from this production sheet.');
   }
-  if(e&&(e.published||id!=='screen-brand-menu')) return sidebarStep(5,'Forecasting','Go to Forecasting','The swap is already on tomorrow’s production sheet.');
+  if(e&&(e.published||id!=='screen-brand-menu')) return sidebarStep(5,'Forecasting','Tap Forecasting','The swap is already on tomorrow’s production sheet.');
   if(id==='screen-brand-menu'){
     var ov=$('#mo-drawer'), ovOn=!!(ov&&ov.classList.contains('open')), apply=$('#mo-dapply');
     if(ovOn&&apply){
-      if(!apply.disabled){ autoCloseT=0; return {n:4,key:'apply',el:apply,title:'Apply the swap',body:'Forecasting picks it up the moment you apply.'}; }
+      if(!apply.disabled){ autoCloseT=0; return {n:4,key:'apply',el:apply,title:'Apply swap',body:'Forecasting picks it up the moment you apply.'}; }
       /* applied: close the review ourselves after a beat (the ✓ state stays visible), then cue Publish */
       if(!autoCloseT) autoCloseT=Date.now();
       if(Date.now()-autoCloseT>700){ var x=$('#mo-dx'); if(x){ try{ x.click(); }catch(e2){} } }
-      return {n:4,key:'applied',el:apply,title:'Swap applied',body:'Forecasting has the new row. Closing the review\u2026'};
+      return {n:4,key:'applied',el:apply,title:'Swap applied \u2014 closing the review',body:'Forecasting has the new row. Closing the review\u2026'};
     }
-    if(e){ var pub=$('#bm2-publish'); if(pub&&shown(pub)) return {n:5,key:'publish',el:pub,title:'Publish the menu',body:'Makes the swap live on the menu; Forecasting is already updated.'}; return null; }
+    if(e){ var pub=$('#bm2-publish'); if(pub&&shown(pub)) return {n:5,key:'publish',el:pub,title:'Publish',body:'Makes the swap live on the menu; Forecasting is already updated.'}; return null; }
     var tab=$('.bm2-tab[data-t="optimizer"]',a);
-    if(tab&&!tab.classList.contains('active')) return {n:2,key:'tab',el:tab,title:'Open the Menu Optimizer',body:'Centric compares this menu’s performance and recommends swaps.'};
+    if(tab&&!tab.classList.contains('active')) return {n:2,key:'tab',el:tab,title:'Open MENU OPTIMIZER',body:'Centric compares this menu’s performance and recommends swaps.'};
     var cards=$$('.mo-card',a); if(!cards.length) return null;
     var card=cards.filter(function(c){ return c.textContent.indexOf(SWAP_IN)>=0; })[0]||cards[0];
-    var rv=$('[data-mo-review]',card); return rv?{n:3,key:'review',el:rv,title:'Review this swap',body:'Swap in '+SWAP_IN+' — the recommendation with the strongest forecast.'}:null;
+    var rv=$('[data-mo-review]',card); return rv?{n:3,key:'review',el:rv,title:'Review the '+SWAP_IN+' swap',body:'Swap in '+SWAP_IN+' — the recommendation with the strongest forecast.'}:null;
   }
   if(id==='screen-local-menus'){
     var c=$$('.brand-card',a).filter(function(x){ return x.textContent.indexOf(BRAND)>=0; })[0];
-    return c?{n:1,key:'deli',el:c,title:'Select a menu',body:'Tap DELI to open its menu editor.'}:null;
+    return c?{n:1,key:'deli',el:c,title:'Tap DELI',body:'Tap DELI to open its menu editor.'}:null;
   }
   return null;
 }
@@ -7752,45 +7755,56 @@ function step(){
 /* ---- render ---- */
 function ring(){ var r=$('#ecg-ring'); if(!r){ r=document.createElement('div'); r.id='ecg-ring'; r.className='ecg-ring'; document.body.appendChild(r); } return r; }
 function card(){ var c=$('#ecg-card'); if(!c){ c=document.createElement('div'); c.id='ecg-card'; c.className='ecg-card'; document.body.appendChild(c); } return c; }
-function hide(){ var r=$('#ecg-ring'); if(r) r.remove(); var c=$('#ecg-card'); if(c) c.remove(); lastKey=''; lastEl=null; }
+function hide(){ var r=$('#ecg-ring'); if(r) r.remove(); var c=$('#ecg-card'); if(c) c.remove(); lastKey=''; cur=null; lastBox=''; }
 function esc(s){ return String(s).replace(/[&<>"]/g,function(ch){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch]; }); }
+/* ---- content: set once per step; position: every animation frame (see place) ---- */
+var cur=null, lastBox='', nullSince=0;
 function render(s){
-  if(!s){ hide(); return; }
-  reveal(s);
+  if(!s){ if(!cur) return; if(!nullSince) nullSince=Date.now(); if(Date.now()-nullSince>600) hide(); return; }   /* 600 ms grace: no flicker between screens */
+  nullSince=0; cur=s; reveal(s);
   var c=card();
   if(s.key!==lastKey){
-    lastKey=s.key;
-    c.className='ecg-card'+(s.done?' ecg-done':'');
-    c.innerHTML='<div class="ecg-step"><span>Step '+s.n+' of '+TOTAL+'</span><button class="ecg-skip" type="button">Skip guide</button></div>'
-      +'<div class="ecg-title">'+esc(s.title)+'</div><div class="ecg-body">'+esc(s.body)+'</div>'
-      +(s.done?'<button class="ecg-btn" type="button">Restart</button>':'')
+    lastKey=s.key; lastBox='';
+    c.className='ecg-card'+(s.done?' ecg-done':'')+(mobile()?' ecg-dock':'');
+    c.innerHTML='<div class="ecg-row"><span class="ecg-step">'+s.n+'/'+TOTAL+'</span><span class="ecg-title">'+esc(s.title)+'</span><button class="ecg-skip" type="button" aria-label="Skip guide">Skip</button></div>'
+      +(s.done?'<div class="ecg-body">'+esc(s.body)+'</div><button class="ecg-btn" type="button">Restart</button>':'')
       +'<div class="ecg-bar"><i style="width:'+Math.round(100*s.n/TOTAL)+'%"></i></div><span class="ecg-arrow"></span>';
     $('.ecg-skip',c).onclick=function(){ skipped=true; hide(); pill(true); };
     var rb=$('.ecg-btn',c); if(rb) rb.onclick=function(){ location.reload(); };
   }
-  var r=ring(), W=innerWidth, H=innerHeight;
-  if(s.el&&visible(s.el)){
-    var b=s.el.getBoundingClientRect(), pad=6;
-    r.style.display='block'; r.style.left=(b.left-pad)+'px'; r.style.top=(b.top-pad)+'px'; r.style.width=(b.width+2*pad)+'px'; r.style.height=(b.height+2*pad)+'px';
-    var cw=Math.min(320,W-24), ch=c.offsetHeight||120, below=b.bottom+16, above=b.top-16-ch;
-    var top=(below+ch<=H-12)?below:(above>=12?above:Math.max(12,Math.min(H-ch-12,b.bottom+16)));
+  place();
+}
+function place(){
+  if(!cur) return;
+  var c=$('#ecg-card'); if(!c) return;
+  var r=ring(), W=innerWidth, H=innerHeight, el=cur.el, ar=$('.ecg-arrow',c);
+  var on=!!(el&&el.isConnected&&shown(el)), b=on?el.getBoundingClientRect():null;
+  var box=on?[Math.round(b.left),Math.round(b.top),Math.round(b.width),Math.round(b.height),W,H].join(','):'off,'+W+','+H;
+  if(box===lastBox) return; lastBox=box;                        /* nothing moved: nothing to repaint */
+  if(on){ var pad=6; r.style.display='block'; r.style.left=(b.left-pad)+'px'; r.style.top=(b.top-pad)+'px'; r.style.width=(b.width+2*pad)+'px'; r.style.height=(b.height+2*pad)+'px'; }
+  else r.style.display='none';
+  if(mobile()){                                                 /* phones: one fixed slot, the ring does the pointing */
+    c.classList.add('ecg-dock'); c.style.left=''; c.style.top=''; c.style.width=''; ar.style.display='none'; return;
+  }
+  c.classList.remove('ecg-dock');
+  var cw=Math.min(360,W-24), ch=c.offsetHeight||56;
+  if(on&&b.bottom>0&&b.top<H){                                  /* laptop: beside the target, flipping above when needed */
+    var below=b.bottom+14, above=b.top-14-ch;
+    var top=(below+ch<=H-12)?below:(above>=12?above:Math.max(12,Math.min(H-ch-12,below)));
     var left=Math.max(12,Math.min(W-cw-12,b.left+b.width/2-cw/2));
     c.style.left=left+'px'; c.style.top=top+'px'; c.style.width=cw+'px';
-    var ar=$('.ecg-arrow',c), ax=Math.max(14,Math.min(cw-26,b.left+b.width/2-left-6));
-    ar.style.left=ax+'px'; ar.style.top=(top===below)?'-6px':''; ar.style.bottom=(top===below)?'':'-6px';
-    ar.style.display=(top===below||top===above)?'block':'none';
-  } else {
-    r.style.display='none'; var cw2=Math.min(340,W-24);
-    c.style.width=cw2+'px'; c.style.left=((W-cw2)/2)+'px'; c.style.top=(H-(c.offsetHeight||140)-(mobile()?84:28))+'px';
-    $('.ecg-arrow',c).style.display='none';
+    var ax=Math.max(14,Math.min(cw-26,b.left+b.width/2-left-6));
+    ar.style.left=ax+'px'; ar.style.top=(top===below)?'-6px':''; ar.style.bottom=(top===below)?'':'-6px'; ar.style.display=(top===below||top===above)?'block':'none';
+  } else {                                                      /* target off-screen or none: bottom centre */
+    c.style.width=cw+'px'; c.style.left=((W-cw)/2)+'px'; c.style.top=(H-ch-28)+'px'; ar.style.display='none';
   }
 }
 function pill(show){ var p=$('#ecg-pill'); if(show&&!p){ p=document.createElement('button'); p.id='ecg-pill'; p.className='ecg-pill'; p.type='button'; p.textContent='Show guide'; p.onclick=function(){ skipped=false; p.remove(); }; document.body.appendChild(p); } if(!show&&p) p.remove(); }
 function tick(){ try{ ensureStyle(); land(); presetForecast(); if(skipped){ hide(); return; } render(step()); }catch(e){} }
+function frame(){ try{ place(); }catch(e){} requestAnimationFrame(frame); }
 window.__ecGuide={step:step,skip:function(){ skipped=true; hide(); pill(true); },show:function(){ skipped=false; pill(false); },total:TOTAL};
-setInterval(tick,200);
-addEventListener('resize',function(){ try{ render(step()); }catch(e){} });
-addEventListener('scroll',function(){ try{ render(step()); }catch(e){} },true);
+setInterval(tick,200); requestAnimationFrame(frame);
+addEventListener('resize',function(){ lastBox=''; });
 if(document.readyState==='loading') addEventListener('DOMContentLoaded',tick); else tick();
 })();
 </script>
