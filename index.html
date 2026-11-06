@@ -7671,7 +7671,7 @@ var CSS=''
  +'.ecg-card.ecg-dock{left:12px!important;right:12px!important;top:auto!important;bottom:124px!important;width:auto!important;border-radius:12px}'
  +'.ecg-pill{position:fixed;left:50%;bottom:14px;transform:translateX(-50%);z-index:99991;background:#050E1F;color:#fff;border:0;border-radius:999px;padding:8px 14px;font:600 12px Inter,system-ui,sans-serif;cursor:pointer;box-shadow:0 6px 18px rgba(0,0,0,.25)}'
  +'@media (max-width:900px),(max-height:520px){.ecg-pill{bottom:76px}}';
-var TOTAL=9, autoCloseT=0, skipped=false, landed=false, landT=0, fcPreset=false, lastKey='';
+var TOTAL=9, autoCloseT=0, genSince=0, skipped=false, landed=false, landT=0, fcPreset=false, lastKey='';
 function $(s,r){ return (r||document).querySelector(s); }
 function $$(s,r){ return Array.prototype.slice.call((r||document).querySelectorAll(s)); }
 function active(){ return $('.screen.active'); }
@@ -7722,8 +7722,12 @@ function step(){
     return null;
   }
   if(id==='screen-forecasting'){
-    if(!window.fcGenerated){ var g=$('#fc-gen'); return g?{n:6,key:'fc-gen',el:g,title:'Generate (site + Tomorrow preset)',body:'Eurest Cafe and Tomorrow are already selected — tap Generate.'}:null; }
+    var g=$('#fc-gen');
+    if(!window.fcGenerated){ genSince=0; return g?{n:6,key:'fc-gen',el:g,title:'Generate (site + Tomorrow preset)',body:'Eurest Cafe and Tomorrow are already selected — tap Generate.'}:null; }
     var btn=$('#wt-order-btn');
+    /* the MyOrders button is injected by the Webtrition add-on's 300 ms tick: keep the Generate cue (same key, no
+       repaint) until it exists, and only fall back to the sidebar row if it has not appeared within 1.5 s */
+    if(!btn||!shown(btn)){ if(!genSince) genSince=Date.now(); if(Date.now()-genSince<1500&&g) return {n:6,key:'fc-gen',el:g,title:'Generate (site + Tomorrow preset)',body:''}; }
     if(btn&&shown(btn)) return {n:7,key:'wt-btn',el:btn,title:'Build suggested order in MyOrders',body:'The swap-in is on the sheet as NEW · FROM SWAP. Send its needs to Webtrition.'};
     if(!e) return null;
     return sidebarStep(7,'Webtrition','Tap Webtrition','MyOrders builds a suggested order from this production sheet.');
