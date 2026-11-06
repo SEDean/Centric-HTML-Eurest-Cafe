@@ -7648,13 +7648,13 @@ window.__ipPanel={state:S,recs:liveRecs,render:renderAll};
 (function(){
 'use strict';
 /*EC-GUIDE*/
-var SITE='chevron', BRAND='DELI (V4)', SWAP_IN='tuna salad sub';
+var SITE='chevron', BRAND='DELI (V4)';
 var CSS=''
  /* the optimizer toast covered Publish (top:52px/right:16px); park it bottom-right on laptops */
  +'.mo-toast{top:auto!important;bottom:24px!important;right:16px!important}'
- +'.ecg-ring{position:fixed;z-index:99990;pointer-events:none;border:3px solid #0C76D8;border-radius:10px;box-shadow:0 0 0 4px rgba(12,118,216,.18);animation:ecg-pulse 1.6s ease-in-out infinite}'
+ +'.ecg-ring{position:fixed;z-index:2147483000;pointer-events:none;border:3px solid #0C76D8;border-radius:10px;box-shadow:0 0 0 4px rgba(12,118,216,.18);animation:ecg-pulse 1.6s ease-in-out infinite}'
  +'@keyframes ecg-pulse{0%,100%{box-shadow:0 0 0 4px rgba(12,118,216,.18)}50%{box-shadow:0 0 0 12px rgba(12,118,216,0)}}'
- +'.ecg-card{position:fixed;z-index:99991;pointer-events:none;background:#0C76D8;color:#fff;border-radius:10px;padding:8px 12px 7px;font:13px/1.35 Inter,system-ui,sans-serif;box-shadow:0 10px 28px rgba(5,14,31,.28)}'
+ +'.ecg-card{position:fixed;z-index:2147483001;pointer-events:none;background:#0C76D8;color:#fff;border-radius:10px;padding:8px 12px 7px;font:13px/1.35 Inter,system-ui,sans-serif;box-shadow:0 10px 28px rgba(5,14,31,.28)}'
  +'.ecg-card .ecg-row{display:flex;align-items:center;gap:10px;min-height:22px}'
  +'.ecg-card .ecg-step{flex:none;font-size:11px;font-weight:700;letter-spacing:.3px;background:rgba(255,255,255,.18);border-radius:6px;padding:2px 6px}'
  +'.ecg-card .ecg-title{flex:1;font-size:14px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}'
@@ -7670,15 +7670,40 @@ var CSS=''
  /* phones: the card lives in one fixed slot above the toasts; only the ring moves */
  +'.ecg-card.ecg-dock{left:12px!important;right:12px!important;top:auto!important;bottom:124px!important;width:auto!important;border-radius:12px}'
  +'.ecg-pill{position:fixed;left:50%;bottom:14px;transform:translateX(-50%);z-index:99991;background:#050E1F;color:#fff;border:0;border-radius:999px;padding:8px 14px;font:600 12px Inter,system-ui,sans-serif;cursor:pointer;box-shadow:0 6px 18px rgba(0,0,0,.25)}'
- +'@media (max-width:900px),(max-height:520px){.ecg-pill{bottom:76px}}';
+ +'@media (max-width:900px),(max-height:520px){.ecg-pill{bottom:76px}'
+ /* menu editor on phones: one page scroll — the whole category list first, the item table below it (the v23 shell
+    gave the category panel a 160 px scroll box above a separately scrolling table, which felt crowded) */
+ +'#screen-brand-menu .bm2-body{overflow:auto!important;-webkit-overflow-scrolling:touch}'
+ +'#screen-brand-menu .bm2-split{flex:none!important;height:auto!important;min-height:0!important;overflow:visible!important}'
+ +'#screen-brand-menu .bm2-split .bm2-side,#screen-brand-menu .bm2-split .bm2-side-menus{max-height:none!important;height:auto!important;overflow:visible!important;flex:none!important}'
+ +'#screen-brand-menu .bm2-split .bm2-main{flex:none!important;height:auto!important;min-height:0!important;overflow:auto!important}'
+ +'}';
 var TOTAL=9, autoCloseT=0, genSince=0, skipped=false, landed=false, landT=0, fcPreset=false, lastKey='';
 function $(s,r){ return (r||document).querySelector(s); }
 function $$(s,r){ return Array.prototype.slice.call((r||document).querySelectorAll(s)); }
 function active(){ return $('.screen.active'); }
 function shown(el){ if(!el) return false; var r=el.getBoundingClientRect(); return r.width>0&&r.height>0; }
 function visible(el){ if(!shown(el)) return false; var r=el.getBoundingClientRect(); return r.bottom>0&&r.right>0&&r.top<innerHeight&&r.left<innerWidth; }
-var scrolledKey='';
-function reveal(s){ if(!s.el||s.key===scrolledKey||visible(s.el)) return; scrolledKey=s.key; try{ s.el.scrollIntoView({block:'center',inline:'nearest',behavior:'smooth'}); }catch(e){ try{ s.el.scrollIntoView(); }catch(e2){} } }
+var scrolledKey='', scrolledAt=0, scrollTries=0;
+function reveal(s){
+  if(!s.el||visible(s.el)) return;
+  if(s.key!==scrolledKey){ scrolledKey=s.key; scrollTries=0; }
+  if(scrollTries>=3||Date.now()-scrolledAt<900) return;          /* retry up to 3x, 0.9 s apart (late layout, images) */
+  scrolledAt=Date.now(); scrollTries++;
+  try{ s.el.scrollIntoView({block:'center',inline:'nearest',behavior:scrollTries===1?'smooth':'auto'}); }catch(e){ try{ s.el.scrollIntoView(); }catch(e2){} }
+}
+
+/* ---- Local Menus card order: the demo menus first, the two shared menus after GRILL ---- */
+var BRAND_ORDER=['COOL CHIX (V4)','DELI (V4)','GRILL (V4)','Kokumi (V4)','Hilltop Bagel Co (V4)','Scan and Pay (V4)'];
+function orderBrands(){
+  var grid=$('#local-menus-grid'); if(!grid) return;
+  var cards=$$('.brand-card',grid); if(cards.length<2) return;
+  var name=function(c){ var n=$('.brand-card-name',c); return (n?n.textContent:c.textContent).trim(); };
+  var rank=function(c){ var i=BRAND_ORDER.indexOf(name(c)); return i<0?BRAND_ORDER.length:i; };
+  var sorted=cards.slice().sort(function(a,b){ return rank(a)-rank(b); });
+  if(sorted.every(function(c,i){ return c===cards[i]; })) return;
+  sorted.forEach(function(c){ grid.appendChild(c); });
+}
 function sbItem(label){ var a=active(); if(!a) return null; return $$('.sidebar-full nav .sb-item',a).filter(function(x){ var l=x.querySelector('.sb-label'); return ((l?l.textContent:x.textContent)||'').trim()===label; })[0]||null; }
 function mobile(){ try{ return !!(window.__rsShell&&window.__rsShell.mobile()); }catch(e){ return false; } }
 function drawerOpen(){ try{ return !!(window.__rsShell&&window.__rsShell.isOpen()); }catch(e){ return false; } }
@@ -7746,8 +7771,11 @@ function step(){
     var tab=$('.bm2-tab[data-t="optimizer"]',a);
     if(tab&&!tab.classList.contains('active')) return {n:2,key:'tab',el:tab,title:'Open MENU OPTIMIZER',body:'Centric compares this menu’s performance and recommends swaps.'};
     var cards=$$('.mo-card',a); if(!cards.length) return null;
-    var card=cards.filter(function(c){ return c.textContent.indexOf(SWAP_IN)>=0; })[0]||cards[0];
-    var rv=$('[data-mo-review]',card); return rv?{n:3,key:'review',el:rv,title:'Review the '+SWAP_IN+' swap',body:'Swap in '+SWAP_IN+' — the recommendation with the strongest forecast.'}:null;
+    /* cue the recommendation with the highest revenue potential (the ▲$ amount on the card) */
+    var best=null, bestV=-1;
+    cards.forEach(function(c){ var a=$('.mo-pot .amt',c); var v=a?parseFloat((a.textContent||'').replace(/[^0-9.]/g,'')):NaN; if(!isNaN(v)&&v>bestV){ bestV=v; best=c; } });
+    var card=best||cards[0], nm=$('.mo-duo .col:last-child .nm',card), inn=nm?nm.textContent.trim():'this';
+    var rv=$('[data-mo-review]',card); return rv?{n:3,key:'review',el:rv,title:'Review the '+inn+' swap'+(bestV>=0?' (\u25b2$'+Math.round(bestV)+')':''),body:''}:null;
   }
   if(id==='screen-local-menus'){
     var c=$$('.brand-card',a).filter(function(x){ return x.textContent.indexOf(BRAND)>=0; })[0];
@@ -7766,27 +7794,29 @@ var cur=null, lastBox='', nullSince=0;
 function render(s){
   if(!s){ if(!cur) return; if(!nullSince) nullSince=Date.now(); if(Date.now()-nullSince>600) hide(); return; }   /* 600 ms grace: no flicker between screens */
   nullSince=0; cur=s; reveal(s);
+  if(!s.done){ var oc=$('#ecg-card'); if(oc) oc.remove(); lastKey=s.key; lastBox=''; place(); return; }   /* step cues: ring only */
   var c=card();
   if(s.key!==lastKey){
     lastKey=s.key; lastBox='';
     c.className='ecg-card'+(s.done?' ecg-done':'')+(mobile()?' ecg-dock':'');
-    c.innerHTML='<div class="ecg-row"><span class="ecg-step">'+s.n+'/'+TOTAL+'</span><span class="ecg-title">'+esc(s.title)+'</span><button class="ecg-skip" type="button" aria-label="Skip guide">Skip</button></div>'
+    c.innerHTML='<div class="ecg-row"><span class="ecg-step">'+s.n+'/'+TOTAL+'</span><span class="ecg-title">'+esc(s.title)+'</span><button class="ecg-skip" type="button" aria-label="Close">Close</button></div>'
       +(s.done?'<div class="ecg-body">'+esc(s.body)+'</div><button class="ecg-btn" type="button">Restart</button>':'')
       +'<div class="ecg-bar"><i style="width:'+Math.round(100*s.n/TOTAL)+'%"></i></div><span class="ecg-arrow"></span>';
-    $('.ecg-skip',c).onclick=function(){ skipped=true; hide(); pill(true); };
+    $('.ecg-skip',c).onclick=function(){ skipped=true; hide(); };
     var rb=$('.ecg-btn',c); if(rb) rb.onclick=function(){ location.reload(); };
   }
   place();
 }
 function place(){
   if(!cur) return;
-  var c=$('#ecg-card'); if(!c) return;
-  var r=ring(), W=innerWidth, H=innerHeight, el=cur.el, ar=$('.ecg-arrow',c);
+  var c=$('#ecg-card');
+  var r=ring(), W=innerWidth, H=innerHeight, el=cur.el, ar=c?$('.ecg-arrow',c):null;
   var on=!!(el&&el.isConnected&&shown(el)), b=on?el.getBoundingClientRect():null;
   var box=on?[Math.round(b.left),Math.round(b.top),Math.round(b.width),Math.round(b.height),W,H].join(','):'off,'+W+','+H;
   if(box===lastBox) return; lastBox=box;                        /* nothing moved: nothing to repaint */
   if(on){ var pad=6; r.style.display='block'; r.style.left=(b.left-pad)+'px'; r.style.top=(b.top-pad)+'px'; r.style.width=(b.width+2*pad)+'px'; r.style.height=(b.height+2*pad)+'px'; }
   else r.style.display='none';
+  if(!c) return;
   if(mobile()){                                                 /* phones: one fixed slot, the ring does the pointing */
     c.classList.add('ecg-dock'); c.style.left=''; c.style.top=''; c.style.width=''; ar.style.display='none'; return;
   }
@@ -7804,9 +7834,9 @@ function place(){
   }
 }
 function pill(show){ var p=$('#ecg-pill'); if(show&&!p){ p=document.createElement('button'); p.id='ecg-pill'; p.className='ecg-pill'; p.type='button'; p.textContent='Show guide'; p.onclick=function(){ skipped=false; p.remove(); }; document.body.appendChild(p); } if(!show&&p) p.remove(); }
-function tick(){ try{ ensureStyle(); land(); presetForecast(); if(skipped){ hide(); return; } render(step()); }catch(e){} }
+function tick(){ try{ ensureStyle(); land(); orderBrands(); presetForecast(); if(skipped){ hide(); return; } render(step()); }catch(e){} }
 function frame(){ try{ place(); }catch(e){} requestAnimationFrame(frame); }
-window.__ecGuide={step:step,skip:function(){ skipped=true; hide(); pill(true); },show:function(){ skipped=false; pill(false); },total:TOTAL};
+window.__ecGuide={step:step,skip:function(){ skipped=true; hide(); },show:function(){ skipped=false; },total:TOTAL};
 setInterval(tick,200); requestAnimationFrame(frame);
 addEventListener('resize',function(){ lastBox=''; });
 if(document.readyState==='loading') addEventListener('DOMContentLoaded',tick); else tick();
